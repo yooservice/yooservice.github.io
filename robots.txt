@@ -1,0 +1,103 @@
+# YooService — robots.txt
+# https://yooservice.github.io/
+# Last updated: 2025
+#
+# ──────────────────────────────────────────────────────────
+# Allow all legitimate search engines full access
+# ──────────────────────────────────────────────────────────
+
+User-agent: *
+Allow: /
+
+# Block private or utility paths
+Disallow: /cdn-cgi/
+Disallow: /.git/
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /*.json$
+Disallow: /*?s=*
+Disallow: /*?utm_*
+Disallow: /404
+Disallow: /500
+
+# ──────────────────────────────────────────────────────────
+# Google-specific
+# ──────────────────────────────────────────────────────────
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Googlebot-Image
+Allow: /img/
+
+User-agent: Googlebot-Mobile
+Allow: /
+
+# ──────────────────────────────────────────────────────────
+# Bing / Microsoft
+# ──────────────────────────────────────────────────────────
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+User-agent: msnbot
+Allow: /
+Crawl-delay: 2
+
+# ──────────────────────────────────────────────────────────
+# AI Crawlers — allow for AIO/AEO indexing
+# ──────────────────────────────────────────────────────────
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# ──────────────────────────────────────────────────────────
+# Block malicious / scrapers
+# ──────────────────────────────────────────────────────────
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+# ──────────────────────────────────────────────────────────
+# Sitemap location
+# ──────────────────────────────────────────────────────────
+
+Sitemap: https://yooservice.github.io/sitemap.xml
+
+# ──────────────────────────────────────────────────────────
+# Host
+# ──────────────────────────────────────────────────────────
+
+Host: https://yooservice.github.io
