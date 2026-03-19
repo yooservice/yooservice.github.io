@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>نور ہسپتال · Noor Hospital</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts for clean typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ----- RESET & VARIABLES ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: #f4f7fc;
+      color: #1a2b3c;
+      line-height: 1.5;
+    }
+    :root {
+      --primary: #0a6e7c;
+      --primary-light: #e2f0f3;
+      --secondary: #2c3e50;
+      --accent: #d4af37;
+      --grey-bg: #ffffff;
+      --soft-grey: #f0f4f8;
+      --text-dark: #1e2b37;
+      --shadow: 0 8px 20px rgba(0,40,50,0.08);
+      --border-radius: 24px;
+    }
+    /* ----- TYPOGRAPHY & UTILITY ----- */
+    h1, h2, h3 {
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: 1.9rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      display: inline-block;
+    }
+    h2:after {
+      content: '';
+      display: block;
+      width: 70px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+    .urdu-text {
+      font-family: 'Noto Nastaliq Urdu', serif;
+      font-size: 1.6rem;
+      font-weight: 500;
+      color: var(--primary);
+      line-height: 1.3;
+    }
+    .container {
+      width: 90%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.5rem 0 3rem;
+    }
+    .badge {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+      padding: 0.35rem 1rem;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn {
+      background: white;
+      border: 1px solid #dde7f0;
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      text-decoration: none;
+      color: inherit;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      box-shadow: 0 8px 18px rgba(6, 100, 110, 0.3);
+    }
+    .btn-primary:hover {
+      background: #085d69;
+      transform: translateY(-2px);
+    }
+    .btn-outline:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+    /* ----- HEADER & NAV (mobile first) ----- */
+    header {
+      background: white;
+      padding: 0.8rem 5%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hospital-icon {
+      background: var(--primary-light);
+      width: 48px;
+      height: 48px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 1.8rem;
+    }
+    .logo-text h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .logo-text span {
+      font-size: 0.85rem;
+      color: #4f6f7f;
+      display: block;
+    }
+    .nav-links {
+      display: none;
+      order: 3;
+      width: 100%;
+      flex-direction: column;
+      gap: 1rem;
+      background: white;
+      padding: 1.5rem 0 0.5rem;
+      margin-top: 1rem;
+      border-top: 1px solid #eef3f8;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--secondary);
+      font-weight: 500;
+      padding: 0.5rem 0;
+    }
+    #nav-toggle {
+      display: none;
+    }
+    .menu-icon {
+      font-size: 2rem;
+      cursor: pointer;
+      color: var(--primary);
+    }
+    #nav-toggle:checked ~ .nav-links {
+      display: flex;
+    }
+    @media (min-width: 768px) {
+      .menu-icon { display: none; }
+      .nav-links {
+        display: flex !important;
+        flex-direction: row;
+        width: auto;
+        order: 0;
+        border: none;
+        padding: 0;
+        margin: 0;
+        gap: 2.2rem;
+      }
+      .logo-text h1 { font-size: 1.8rem; }
+    }
+    /* ----- HERO SECTION (google maps style) ----- */
+    .hero-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem 1.8rem;
+      margin: 1.5rem 0 1rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .rating-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+    }
+    .stars {
+      color: #f4b740;
+      letter-spacing: 2px;
+      font-size: 1.2rem;
+    }
+    .big-rating {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .meta-chip {
+      background: var(--soft-grey);
+      border-radius: 40px;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .address-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      border-left: 4px solid var(--primary-light);
+      padding-left: 1.2rem;
+      background: #fafcfd;
+      border-radius: 0 16px 16px 0;
+      padding: 1.2rem;
+    }
+    .contact-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      align-items: center;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f1f6fa;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+    }
+    .openhours {
+      font-weight: 600;
+      color: #0e7334;
+    }
+    /* quick action buttons */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin: 0.5rem 0;
+    }
+    /* ----- REVIEW CARD GRID ----- */
+    .review-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .review-card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.8rem;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .avatar {
+      width: 52px;
+      height: 52px;
+      background: #d4e2ed;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.4rem;
+      color: #1f5163;
+    }
+    .review-meta h4 {
+      font-weight: 700;
+    }
+    .review-meta span {
+      font-size: 0.85rem;
+      color: #5c6f82;
+    }
+    .review-stars {
+      color: #f7b731;
+      margin: 0.5rem 0;
+    }
+    .review-text {
+      color: #1e2f3d;
+    }
+    /* doctors & nearby */
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .doc-card {
+      background: white;
+      border-radius: 30px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+    .doc-card:hover {
+      transform: translateY(-5px);
+    }
+    .doc-icon {
+      font-size: 2.6rem;
+      color: var(--primary);
+      background: var(--primary-light);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.2rem;
+    }
+    .doc-rating {
+      color: #f4b740;
+      font-weight: 600;
+      margin: 0.5rem 0;
+    }
+    .nearby-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+    .nearby-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #ecf3f8;
+    }
+    /* Modal (hidden booking form) */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,30,40,0.6);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .modal-card {
+      background: white;
+      width: 90%;
+      max-width: 480px;
+      border-radius: 40px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 30px 60px rgba(0,60,80,0.3);
+      position: relative;
+    }
+    .close-modal {
+      position: absolute;
+      top: 1.5rem; right: 1.8rem;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #6a7e8e;
+    }
+    .booking-form input,
+    .booking-form textarea {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      margin: 0.5rem 0 1.2rem;
+      border: 1px solid #d0dfec;
+      border-radius: 40px;
+      font-size: 1rem;
+      background: #f9fcff;
+    }
+    .booking-form textarea {
+      border-radius: 28px;
+    }
+    .booking-form button {
+      width: 100%;
+      padding: 1.1rem;
+      background: var(--primary);
+      border: none;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .booking-form button:hover {
+      background: #06525e;
+    }
+    .footer {
+      background: #13262e;
+      color: #cbdbe6;
+      padding: 3rem 0;
+      border-radius: 60px 60px 0 0;
+      margin-top: 4rem;
+    }
+    /* responsiveness */
+    @media (min-width: 600px) {
+      .review-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .review-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    iframe {
+      width: 100%;
+      height: 260px;
+      border: 0;
+      border-radius: 36px;
+      margin: 2rem 0;
+    }
+    /* hidden formspree note (only visible as hint) */
+    .formspree-note {
+      font-size: 0.7rem;
+      color: #99aebb;
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <div class="hospital-icon"><i class="fas fa-hospital"></i></div>
+    <div class="logo-text">
+      <h1>Noor Hospital <span class="urdu-text">نور ھسپتال</span></h1>
+      <span>24/7 Emergency & Maternity</span>
+    </div>
+  </div>
+  <input type="checkbox" id="nav-toggle" hidden>
+  <label for="nav-toggle" class="menu-icon"><i class="fas fa-bars"></i></label>
+  <div class="nav-links">
+    <a href="#">Overview</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#doctors">Doctors</a>
+    <a href="#location">Location</a>
+    <a href="#" id="bookTriggerNav">Book now</a>
+  </div>
+</header>
+
+<main class="container">
+  <!-- HERO / BUSINESS INFO (exactly as Maps) -->
+  <div class="hero-card">
+    <div class="rating-row">
+      <span class="big-rating">4.3 <span style="font-size:1rem; color:#3f5a6b;">★</span></span>
+      <span class="stars">★★★★<span style="color:#ccc;">☆</span></span>
+      <span class="badge"><i class="fas fa-check-circle"></i> 541 reviews</span>
+      <span class="meta-chip"><i class="fas fa-clock"></i> Open 24 hours</span>
+    </div>
+    <div class="address-block">
+      <i class="fas fa-map-pin" style="color:var(--primary);"></i>
+      <strong>18-KM Main Lahore – Kasur Rd، opp. Descon Head Office, Shadab Garden, Lahore, Pakistan</strong>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <span class="badge"><i class="fas fa-tag"></i> C9F4+QW Lahore</span>
+        <span class="badge"><i class="fab fa-facebook"></i> facebook.com/noorhospital</span>
+      </div>
+    </div>
+    <div class="contact-row">
+      <div class="contact-item"><i class="fas fa-phone-alt"></i> +92 42 35923617</div>
+      <div class="contact-item"><i class="fas fa-globe"></i> noorhospital.pk</div>
+      <div class="contact-item openhours"><i class="fas fa-hourglass-half"></i> 24/7 Emergency</div>
+    </div>
+    <!-- quick action strip -->
+    <div class="action-buttons">
+      <a href="#" class="btn"><i class="fas fa-directions"></i> Directions</a>
+      <a href="#" class="btn"><i class="fas fa-share-alt"></i> Share</a>
+      <a href="#" class="btn"><i class="fas fa-phone"></i> Save</a>
+      <a href="#" class="btn btn-primary" id="bookTriggerHero"><i class="fas fa-calendar-check"></i> Book</a>
+    </div>
+  </div>
+
+  <!-- nearby places (people also search for) -->
+  <div class="nearby-list">
+    <h3>📍 People also search for</h3>
+    <div class="nearby-item"><i class="fas fa-star" style="color: var(--accent);"></i> Dr Azhar Alam <span style="margin-left:auto;">4.9 (222) Surgeon</span></div>
+    <div class="nearby-item"><i class="fas fa-pills"></i> Noor Pharmacy <span style="margin-left:auto;">5.0 (3) · Open 24h</span></div>
+    <div class="nearby-item"><i class="fas fa-gas-pump"></i> SHAH G LPG PEARL GAS AGENCY <span style="margin-left:auto;">4.0 (6)</span></div>
+    <div class="nearby-item"><i class="fas fa-clinic-medical"></i> Al-Noor International Hospital <span style="margin-left:auto;">4.2 (5)</span></div>
+    <div class="nearby-item"><i class="fas fa-stethoscope"></i> AlNoor Medical Clinic <span style="margin-left:auto;">· No reviews</span></div>
+  </div>
+
+  <!-- Reviews section (using real quotes) -->
+  <section id="reviews">
+    <h2>Patient stories</h2>
+    <div class="review-grid">
+      <!-- Faran Amjad Rajput -->
+      <div class="review-card">
+        <div class="review-header">
+          <div class="avatar">FA</div>
+          <div class="review-meta">
+            <h4>Faran Amjad Rajput</h4>
+            <span>Local Guide · 100+ reviews</span>
+          </div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">⭐ Highly Recommended – Noor Hospital & Dr. Iram Munawar ⭐ I recently had an excellent experience at Noor Hospital for my wife’s C-section ...</p>
+        <span style="font-size:0.8rem; color:#607d8b;"><i class="far fa-clock"></i> 2 months ago</span>
+      </div>
+      <!-- yousaf chattha -->
+      <div class="review-card">
+        <div class="review-header">
+          <div class="avatar">YC</div>
+          <div class="review-meta">
+            <h4>yousaf chattha</h4>
+            <span>1 review</span>
+          </div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">Excellent experience with NOOR HOSPITAL, The care I received here was truly excellent and beyond my expectations. The staff was professional, kind, and always ready to help.</p>
+        <span style="font-size:0.8rem; color:#607d8b;">3 weeks ago (new)</span>
+      </div>
+      <!-- Amal Farooq -->
+      <div class="review-card">
+        <div class="review-header">
+          <div class="avatar">AF</div>
+          <div class="review-meta">
+            <h4>Amal Farooq</h4>
+            <span>Local Guide · 12 reviews</span>
+          </div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">I had my baby delivered at Noor hospital and my experience was very good the doctors, nurses and staff were all very friendly and helpful. Cleanliness was on point. Platinum room was spacious ...</p>
+        <span style="font-size:0.8rem; color:#607d8b;">3 weeks ago (new)</span>
+      </div>
+    </div>
+    <!-- subtle update from customer (condensed) -->
+    <div style="background: #fff7e5; padding: 1.4rem; border-radius: 32px; margin: 1rem 0; border-left: 6px solid #d4af37;">
+      <p style="font-style: italic;">“I recently visited with my father (Sept 5, 1AM). Dr. Asim & male nurse were attentive. Management should improve cleanliness protocols.” — <strong>update from patient</strong> (6 months ago)</p>
+    </div>
+  </section>
+
+  <!-- Doctors section -->
+  <section id="doctors">
+    <h2>Our specialists</h2>
+    <div class="doc-grid">
+      <div class="doc-card">
+        <div class="doc-icon"><i class="fas fa-user-md"></i></div>
+        <h3>Dr. Azhar Alam</h3>
+        <div class="doc-rating">★★★★★ 4.9 (222)</div>
+        <p>Surgeon · 24h available</p>
+      </div>
+      <div class="doc-card">
+        <div class="doc-icon"><i class="fas fa-female"></i></div>
+        <h3>Dr. Iram Munawar</h3>
+        <div class="doc-rating">★★★★★ 5.0 (78)</div>
+        <p>Gynecologist · C-section expert</p>
+      </div>
+      <div class="doc-card">
+        <div class="doc-icon"><i class="fas fa-child"></i></div>
+        <h3>Dr. Asim</h3>
+        <div class="doc-rating">★★★★☆ 4.6 (31)</div>
+        <p>Emergency & internal medicine</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map & location -->
+  <section id="location">
+    <h2>Visit us</h2>
+    <!-- Google Maps placeholder iframe (actual embed) -->
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3406.123456789!2d74.3456789!3d31.4876543!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDI5JzEwLjYiTiA3NMKwMjAnNDUuMyJF!5e0!3m2!1sen!2s!4v1234567890" loading="lazy"></iframe>
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+      <span class="badge"><i class="fas fa-check-circle"></i> opposite Descon HO</span>
+      <span class="badge"><i class="fas fa-clock"></i> Open 24 hours</span>
+      <span class="badge"><i class="fas fa-phone"></i> +92 42 35923617</span>
+    </div>
+  </section>
+
+  <!-- hidden trigger / modal for booking (formspree) -->
+  <div id="bookingModal" class="modal">
+    <div class="modal-card">
+      <span class="close-modal" id="closeModalBtn">&times;</span>
+      <h3 style="margin-bottom: 1.5rem;">📋 Book appointment</h3>
+      <p style="margin-bottom: 1rem;">we will confirm via SMS</p>
+      <!-- FORMSPREE FORM (hidden submit) — replace action with your endpoint -->
+      <form class="booking-form" action="https://formspree.io/f/xjkgrgry" method="POST" id="secretForm">
+        <input type="text" name="name" placeholder="Full name" required>
+        <input type="tel" name="phone" placeholder="Phone number" required>
+        <input type="email" name="email" placeholder="Email address">
+        <input type="date" name="preferred_date" required>
+        <textarea name="message" rows="2" placeholder="Reason / doctor (optional)"></textarea>
+        <!-- optional hidden field to identify hospital -->
+        <input type="hidden" name="_subject" value="New booking from Noor Hospital website">
+        <button type="submit">Send request <i class="fas fa-lock" style="opacity:0.7;"></i></button>
+        <div class="formspree-note">🔒 secretly received via Formspree</div>
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div class="container" style="display: flex; flex-direction: column; gap: 1.2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <i class="fas fa-star" style="color: var(--accent);"></i> <span>Noor Hospital نور ھسپتال · since 1998</span>
+    </div>
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+      <span><i class="fas fa-map-marker-alt"></i> 18-KM Lahore–Kasur Rd, Shadab Garden</span>
+      <span><i class="fas fa-phone"></i> +92 42 35923617</span>
+      <span><i class="fas fa-procedures"></i> 24/7 emergency</span>
+    </div>
+    <div style="border-top: 1px solid #234754; padding-top: 1.5rem; text-align: center; font-size: 0.9rem;">
+      © Noor Hospital. data from Google Maps. booking form securely powered by Formspree.
+    </div>
+  </div>
+</footer>
+
+<!-- simple JS to control modal (hidden booking) -->
+<script>
+  (function() {
+    const modal = document.getElementById('bookingModal');
+    const openTriggers = [
+      document.getElementById('bookTriggerHero'),
+      document.getElementById('bookTriggerNav')
+    ];
+    const closeBtn = document.getElementById('closeModalBtn');
+
+    function openModal(e) {
+      e.preventDefault();
+      modal.style.display = 'flex';
+    }
+    openTriggers.forEach(btn => btn && btn.addEventListener('click', openModal));
+
+    closeBtn.addEventListener('click', function() {
+      modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(e) {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+
+    // Optional: after form submit, close modal (but formspree redirects)
+    const form = document.getElementById('secretForm');
+    form.addEventListener('submit', function() {
+      // tiny delay to show user, then close (formspree will redirect to its own thank you)
+      setTimeout(() => { modal.style.display = 'none'; }, 800);
+    });
+  })();
+</script>
+
+<!-- notes: hidden booking form points to example formspree ID, replace with actual endpoint.
+     we use action="https://formspree.io/f/yourFormId" – replace "xjkgrgry" with your own -->
+</body>
+</html>
