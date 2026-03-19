@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+  <defs>
+    <linearGradient id="yGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5A0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00B8D9;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="dotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5A0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00B8D9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Icon Mark: Geometric Y in a rounded square -->
+  <rect x="0" y="0" width="80" height="80" rx="18" ry="18" fill="#0A0F1E"/>
+  
+  <!-- Y shape: two top arms meeting center, then down stroke -->
+  <!-- Left arm -->
+  <line x1="18" y1="16" x2="40" y2="42" stroke="url(#yGrad)" stroke-width="7.5" stroke-linecap="round"/>
+  <!-- Right arm -->
+  <line x1="62" y1="16" x2="40" y2="42" stroke="url(#yGrad)" stroke-width="7.5" stroke-linecap="round"/>
+  <!-- Down stroke -->
+  <line x1="40" y1="42" x2="40" y2="64" stroke="url(#yGrad)" stroke-width="7.5" stroke-linecap="round"/>
+  
+  <!-- Tiny accent dot at top right of icon — signals precision -->
+  <circle cx="66" cy="14" r="4" fill="#00E5A0"/>
+
+  <!-- Wordmark: Yoo -->
+  <text x="96" y="37" font-family="'Georgia', serif" font-weight="700" font-size="32" fill="#FFFFFF" letter-spacing="-1">Yoo</text>
+  <!-- Wordmark: Service (thinner weight, accent colour) -->
+  <text x="96" y="62" font-family="'Georgia', serif" font-weight="400" font-size="20" fill="#00E5A0" letter-spacing="3">SERVICE</text>
+
+  <!-- Subtle underline accent under SERVICE -->
+  <rect x="96" y="67" width="120" height="2" rx="1" fill="url(#dotGrad)" opacity="0.5"/>
+</svg>
