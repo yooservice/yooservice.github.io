@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free QR Code Generaator | Ultimate Branding Suite</title>
+    <meta name="description" content="Free QR Code Generaator , Professional QR Code Generator with 50+ styling combinations. High-res downloads,Ultimate Branding Suite custom logos, and brand-safe colors.">
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+	 <link rel="stylesheet" href="qrcode.css">
+</head>
+<body>
+
+<div class="layout">
+    <main class="card">
+        <h2>Design Your QR</h2>
+        <div class="controls-grid">
+            <div>
+                <label>Content / Link</label>
+                <input type="text" id="qr-data" value="https://google.com">
+            </div>
+            <div>
+                <label>Download Format</label>
+                <select id="ext">
+                    <option value="png">PNG (High Res)</option>
+                    <option value="svg">SVG (Vector)</option>
+                    <option value="jpeg">JPG</option>
+                </select>
+            </div>
+        </div>
+
+        <hr style="border:0; border-top:1px solid #eee; margin: 10px 0 20px 0;">
+
+        <div class="controls-grid">
+            <div>
+                <label>Dot Style</label>
+                <select id="dots-style">
+                    <option value="square">Square</option>
+                    <option value="dots">Dots</option>
+                    <option value="rounded">Rounded</option>
+                    <option value="extra-rounded">Extra Rounded</option>
+                    <option value="classy">Classy</option>
+                    <option value="classy-rounded">Classy Rounded</option>
+                </select>
+            </div>
+            <div>
+                <label>Corner Square</label>
+                <select id="corner-style">
+                    <option value="square">Square</option>
+                    <option value="dot">Dot</option>
+                    <option value="extra-rounded">Rounded</option>
+                </select>
+            </div>
+            <div>
+                <label>Main Color</label>
+                <input type="color" id="dots-color" value="#6366f1">
+            </div>
+            <div>
+                <label>Corner Color</label>
+                <input type="color" id="corner-color" value="#4f46e5">
+            </div>
+            <div>
+                <label>Background</label>
+                <input type="color" id="bg-color" value="#ffffff">
+            </div>
+            <div>
+                <label>Error Correction</label>
+                <select id="error-level">
+                    <option value="Q">Medium (25%)</option>
+                    <option value="H">High (30% - Best for Logos)</option>
+                </select>
+            </div>
+        </div>
+
+        <label>Center Logo (Transparent PNG recommended)</label>
+        <input type="file" id="logo-file" accept="image/*">
+
+        <div class="btn-group">
+            <button class="btn-main" onclick="downloadQR()">Download Files</button>
+            <button class="btn-guide" onclick="toggleGuide()">How to Use</button>
+        </div>
+
+        <section id="guide" class="guide-section card" style="background: #f8fafc; border: 1px dashed #cbd5e1; display: block;">
+            <h3>Getting Started</h3>
+            <div class="step">
+                <div class="step-num">1</div>
+                <p><strong>Input Content:</strong> Paste your Etsy shop link or website URL.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <p><strong>Style it:</strong> Choose "Classy" or "Rounded" for a modern look. Adjust the colors to match your brand.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <p><strong>Add Logo:</strong> Upload your icon. Use "High" error correction to ensure it still scans perfectly.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <p><strong>Export:</strong> Use PNG for social media or SVG for high-quality printing.</p>
+            </div>
+        </section>
+    </main>
+
+    <aside class="preview-sticky">
+        <div class="card">
+            <label style="text-align: center;">Live Preview</p>
+            <div class="canvas-container">
+                <div id="canvas"></div>
+            </div>
+            <p style="font-size: 0.75rem; color: #94a3b8; text-align: center; margin-top: 15px;">
+                Changes update automatically. Test with your phone camera!
+            </p>
+        </div>
+    </aside>
+</div>
+
+ <script src="qrcode.js"></script>
+</body>
+</html>
