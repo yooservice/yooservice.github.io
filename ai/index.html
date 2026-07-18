@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat — Water AI</title>
+<meta name="description" content="Chat with Water AI, your intelligent assistant.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; overflow: hidden; }
+  .nav { flex-shrink: 0; }
+
+  .app-shell { flex: 1; display: flex; min-height: 0; width: 100%; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    width: 268px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.2s ease;
+  }
+  .sidebar.collapsed { margin-left: -268px; }
+  .sidebar.open { margin-left: 0; }
+  .sidebar-toggle-btn { display: inline-flex; }
+  @media (min-width: 901px) {
+    .sidebar.open + .chat-page .sidebar-toggle-btn { display: none; }
+    .sidebar:not(.open) + .chat-page .sidebar-toggle-btn { display: inline-flex; }
+  }
+  .sidebar-head { padding: 16px 14px 10px; }
+  .btn-block { width: 100%; }
+  .sidebar-search { padding: 0 14px 10px; }
+  .sidebar-search input {
+    width: 100%; border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-size: 13px; font-family: inherit;
+  }
+  .sidebar-search input:focus { outline: none; border-color: var(--primary); }
+  .chat-list { flex: 1; overflow-y: auto; padding: 0 8px; display: flex; flex-direction: column; gap: 2px; }
+  .chat-list-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 10px; border-radius: 8px; cursor: pointer;
+    font-size: 13.5px; color: var(--body-text); position: relative;
+  }
+  .chat-list-item:hover { background: var(--canvas); }
+  .chat-list-item.active { background: rgba(31,122,140,0.1); color: var(--ink); font-weight: 500; }
+  .chat-list-item .name {
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .chat-list-item .name-input {
+    flex: 1; border: 1px solid var(--primary); border-radius: 5px; padding: 2px 6px;
+    font: inherit; font-size: 13.5px; width: 100%;
+  }
+  .chat-list-item .row-actions { display: none; gap: 2px; flex-shrink: 0; }
+  .chat-list-item:hover .row-actions { display: flex; }
+  .chat-list-item .row-actions button {
+    border: none; background: transparent; cursor: pointer; color: var(--muted);
+    padding: 2px 4px; border-radius: 4px; font-size: 12px; line-height: 1;
+  }
+  .chat-list-item .row-actions button:hover { color: var(--primary); background: rgba(31,122,140,0.12); }
+  .chat-list-empty { color: var(--muted); font-size: 13px; padding: 16px 10px; text-align: center; }
+
+  .sidebar-locked {
+    margin: 10px; padding: 16px 14px; border-radius: 10px;
+    background: rgba(31,122,140,0.06); border: 1px dashed var(--border);
+    text-align: center;
+  }
+  .sidebar-locked p { font-size: 12.5px; color: var(--muted); margin: 0 0 10px; line-height: 1.5; }
+  .sidebar-locked .btn { width: 100%; height: 34px; font-size: 12.5px; }
+
+  .sidebar-foot { margin-top: auto; padding: 12px 14px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .sidebar-foot-actions { display: flex; align-items: center; gap: 8px; }
+  .sidebar-foot-actions .btn { min-width: 136px; }
+  .sidebar-foot-actions .demo-toggle { min-width: 94px; }
+  .plan-badge { font-size: 11.5px; font-weight: 600; padding: 4px 9px; border-radius: 20px; letter-spacing: 0.02em; }
+  .plan-badge.free { background: rgba(120,137,142,0.15); color: var(--muted); }
+  .plan-badge.paid { background: rgba(31,122,140,0.14); color: var(--primary); }
+  .demo-toggle { font-size: 11px; }
+
+  /* ---------- Main chat column ---------- */
+  .chat-page { flex: 1; display: flex; flex-direction: column; width: 100%; max-width: none; margin: 0 auto; padding: 0 20px; min-width: 0; }
+  .chat-header { display: flex; align-items: center; justify-content: flex-start; padding: 0; border-bottom: 1px solid var(--border); gap: 8px; flex-wrap: nowrap; height: 30px; }
+  .chat-header h3 { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  .chat-header .actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; justify-content: flex-start; width: auto; max-width: 100%; height: 30px; flex-wrap: nowrap; }
+  .chat-header .actions .icon-btn { height: 30px; padding: 0 10px; }
+  .chat-header .actions .mode-bar { display: flex; gap: 6px; align-items: center; height: 30px; }
+  .chat-header .actions .mode-bar .mode-pill { margin: 0; }
+  .icon-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; color: var(--body-text); height: 30px; line-height: 1; min-width: 44px; }
+  .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .icon-btn.retry { border-color: #e0a1a1; color: #b23b3b; }
+  .icon-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .icon-btn:disabled:hover { border-color: var(--border); color: var(--body-text); }
+  .sidebar-close-btn { margin-left: 8px; }
+  .icon-btn { min-width: 44px; }
+
+  .hamburger-icon {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    width: 20px;
+    height: 18px;
+  }
+  .hamburger-icon span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    border-radius: 999px;
+  }
+
+  @media (min-width: 901px) {
+    .sidebar.open + .chat-page .chat-header .sidebar-toggle-btn { display: none; }
+    .sidebar:not(.open) + .chat-page .chat-header .sidebar-toggle-btn { display: inline-flex; }
+  }
+
+  /* persona / mode pills */
+  .mode-bar { display: flex; gap: 6px; padding: 0; align-items: center; }
+  .mode-pill {
+    border: 1px solid var(--border); background: var(--surface); border-radius: 20px;
+    padding: 0 12px; font-size: 12px; cursor: pointer; color: var(--body-text);
+    display: flex; align-items: center; gap: 5px; height: 30px; min-height: 30px;
+  }
+  .mode-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .mode-pill .lock { font-size: 10px; opacity: 0.7; }
+
+  #messages { flex: 1; overflow-y: auto; padding: 24px 0; display: flex; flex-direction: column; gap: 16px; }
+  .msg { display: flex; flex-direction: column; max-width: 75%; }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.assistant { align-self: flex-start; align-items: flex-start; }
+  .bubble { padding: 12px 16px; border-radius: 14px; font-size: 15px; line-height: 1.5; white-space: pre-wrap; position: relative; }
+  .msg.user .bubble { background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.assistant .bubble { background: var(--surface); border: 1px solid var(--border); color: var(--ink); border-bottom-left-radius: 4px; }
+  .msg.error .bubble { border-color: #e0a1a1; color: #b23b3b; background: #fdf1f1; }
+  .msg.pinned .bubble { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+
+  /* ---------- Rendered Markdown (assistant replies) ---------- */
+  .bubble.md-content { white-space: normal; }
+  .md-content p { margin: 0 0 10px; }
+  .md-content p:last-child { margin-bottom: 0; }
+  .md-content h3.md-h, .md-content h4.md-h, .md-content h5.md-h, .md-content h6.md-h {
+    margin: 14px 0 8px; font-size: 16px; line-height: 1.3; font-family: 'Fraunces', serif; color: var(--ink);
+  }
+  .md-content h3.md-h:first-child, .md-content h4.md-h:first-child { margin-top: 0; }
+  .md-content ul, .md-content ol { margin: 0 0 10px; padding-left: 22px; }
+  .md-content li { margin-bottom: 4px; }
+  .md-content li:last-child { margin-bottom: 0; }
+  .md-content code { font-family: 'JetBrains Mono', monospace; background: rgba(31,122,140,0.09); padding: 1px 5px; border-radius: 4px; font-size: 0.88em; }
+  .md-content pre { background: #0b2229; color: #b9d8dc; padding: 12px 14px; border-radius: 8px; overflow-x: auto; margin: 10px 0; }
+  .md-content pre:first-child { margin-top: 0; }
+  .md-content pre:last-child { margin-bottom: 0; }
+  .md-content pre code { background: none; padding: 0; color: inherit; font-size: 13px; line-height: 1.55; }
+  .md-content blockquote { margin: 10px 0; padding: 2px 14px; border-left: 3px solid var(--accent); color: var(--muted); }
+  .md-content a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+  .md-content hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+  .md-content table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 13.5px; }
+  .md-content th, .md-content td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+  .md-content th { background: rgba(31,122,140,0.07); font-weight: 600; }
+  .md-content strong { font-weight: 600; color: var(--ink); }
+  .md-content del { opacity: 0.65; }
+  .pin-flag { font-size: 10.5px; color: var(--primary); font-weight: 600; margin-bottom: 3px; letter-spacing: 0.02em; }
+  .msg-actions { margin-top: 4px; display: flex; gap: 6px; }
+  .msg-actions .icon-btn { padding: 4px 9px; font-size: 11px; }
+
+  .loading .bubble { display: flex; gap: 4px; padding: 14px 16px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+  .empty-state { margin: auto; text-align: center; color: var(--muted); }
+  .empty-state h2 { color: var(--ink); font-size: 24px; margin-bottom: 8px; }
+
+  #chat-form {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 0 10px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  #chat-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    resize: none;
+    min-height: 48px;
+    max-height: 160px;
+    line-height: 1.4;
+  }
+  #chat-input:focus { outline: none; border-color: var(--primary); }
+  #chat-form .btn {
+    width: auto;
+    min-width: 72px;
+    height: 44px;
+    padding: 0 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .input-hint {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+    margin: -4px 0 6px;
+  }
+  .input-hint kbd { font-family: 'JetBrains Mono', monospace; background: var(--canvas); border: 1px solid var(--border); border-radius: 3px; padding: 1px 4px; }
+
+  @media (max-width: 1100px) {
+    .nav .container { flex-wrap: wrap; gap: 12px; }
+    .nav-actions { width: 100%; display: flex; justify-content: flex-end; }
+    .chat-page { padding: 0 14px; }
+  }
+
+  @media (max-width: 900px) {
+    body { overflow-x: hidden; }
+    .app-shell { flex-direction: column; min-height: calc(100vh - 54px); }
+    .sidebar {
+      position: fixed;
+      top: 54px;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-width: 100%;
+      z-index: 60;
+      transform: translateX(-100%);
+      margin-left: 0;
+      box-shadow: 12px 0 24px rgba(15,48,56,0.15);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar.collapsed { transform: translateX(-100%); }
+    .chat-page { width: 100%; margin-left: 0; padding: 0 14px 14px; }
+    .chat-header { flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+    .chat-header .actions { flex-wrap: wrap; width: 100%; justify-content: flex-start; }
+    .sidebar-foot { position: sticky; bottom: 0; background: var(--surface); }
+    .sidebar-foot-actions { width: 100%; justify-content: flex-end; flex-wrap: wrap; }
+    .sidebar-foot-actions .btn,
+    .sidebar-foot-actions .demo-toggle { width: 100%; }
+    .sidebar-foot-actions { gap: 8px; }
+  }
+
+  @media (max-width: 640px) {
+    .sidebar { width: 100%; max-width: 100%; }
+    .sidebar-foot-actions { flex-direction: column; align-items: stretch; }
+    .sidebar-foot-actions .btn,
+    .sidebar-foot-actions .demo-toggle { width: 100%; }
+    #chat-form { gap: 8px; }
+  }
+
+  /* ---------- Toast ---------- */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--deep); color: var(--canvas); padding: 10px 18px; border-radius: 8px;
+    font-size: 13px; opacity: 0; pointer-events: none; transition: all 0.25s ease; z-index: 200;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15,48,56,0.45); backdrop-filter: blur(2px);
+    display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--surface); border-radius: 16px; max-width: 480px; width: 100%; padding: 32px; position: relative; max-height: 86vh; overflow-y: auto; }
+  .modal.modal-wide { max-width: 620px; }
+  .modal-close { position: absolute; top: 16px; right: 16px; border: none; background: transparent; font-size: 18px; cursor: pointer; color: var(--muted); }
+  .modal-close:hover { color: var(--ink); }
+  .modal .eyebrow { display: block; }
+  .modal h2 { font-size: 24px; margin-bottom: 6px; }
+  .modal p.sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  .feature-highlight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+  .feature-highlight {
+    border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+  }
+  .feature-highlight h4 { font-size: 14.5px; margin: 0 0 6px; font-family: 'Inter', sans-serif; font-weight: 600; color: var(--ink); }
+  .feature-highlight p { font-size: 12.5px; color: var(--muted); margin: 0; line-height: 1.5; }
+
+  .feature-list { list-style: none; padding: 0; margin: 0 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+  .feature-list li { font-size: 13px; color: var(--body-text); display: flex; gap: 8px; align-items: flex-start; }
+  .feature-list li .check { color: var(--success); flex-shrink: 0; }
+
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions .btn { flex: 1; }
+
+  .shortcuts-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
+  .shortcuts-table td { padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  .shortcuts-table td:last-child { text-align: right; }
+  .shortcuts-table kbd {
+    font-family: 'JetBrains Mono', monospace; background: var(--canvas); border: 1px solid var(--border);
+    border-radius: 5px; padding: 3px 7px; font-size: 12px;
+  }
+
+  @media (max-width: 1100px) {
+    .chat-page { padding: 0 14px; }
+    .chat-header { gap: 8px; }
+    .chat-header .actions { width: auto; justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
+    .chat-header .title-wrap { flex: 1 1 100%; }
+  }
+
+  @media (max-width: 720px) {
+    .sidebar { position: fixed; top: 64px; bottom: 0; left: 0; z-index: 60; width: 100%; max-width: 320px; margin-left: -100%; box-shadow: 0 0 0 rgba(0,0,0,0); }
+    .sidebar.open { margin-left: 0; box-shadow: 12px 0 24px rgba(15,48,56,0.15); }
+    .sidebar:not(.open) { margin-left: -100%; }
+    .sidebar-toggle-btn { display: inline-flex; }
+    .chat-page { padding: 0 14px; }
+    .chat-page > #messages { padding: 18px 0; }
+    .feature-highlight-grid, .feature-list { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C12 2 5 11 5 15.5C5 19.09 8.13 22 12 22C15.87 22 19 19.09 19 15.5C19 11 12 2 12 2Z" fill="#1F7A8C"/>
+      </svg>
+      Water AI
+    </a>
+    <div class="nav-links">
+      <a href="index.html#features">Product</a>
+      <a href="index.html#pricing">Pricing</a>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn mode-menu-btn" id="mode-menu-btn" type="button" aria-haspopup="true" aria-expanded="false" title="Open mode menu">Mode</button>
+      <div class="mode-menu" id="mode-menu" hidden>
+        <button class="mode-menu-item" data-mode="general" type="button">General</button>
+        <button class="mode-menu-item" data-mode="writing" type="button">Writing</button>
+        <button class="mode-menu-item" data-mode="code" type="button">Code</button>
+      </div>
+      <button class="btn btn-primary btn-plus" id="account-status-btn" type="button">Get Plus</button>
+    </div>
+  </div>
+</nav>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Chat sidebar">
+    <div class="sidebar-head">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="btn btn-primary btn-block" id="new-chat-btn">+ New chat</button>
+        <button class="icon-btn sidebar-close-btn" id="sidebar-close-btn" title="Close sidebar" aria-controls="sidebar" aria-label="Close sidebar">✕</button>
+      </div>
+    </div>
+
+    <div id="paid-sidebar-body" style="display:none; flex:1; min-height:0; display:flex; flex-direction:column;">
+      <div class="sidebar-search">
+        <input type="text" id="chat-search" placeholder="Search chats...">
+      </div>
+      <div class="chat-list" id="chat-list"></div>
+    </div>
+
+    <div id="free-sidebar-body" style="display:none; flex:1; min-height:0; display:flex; flex-direction:column; justify-content: center;">
+      <div class="sidebar-locked">
+        <p>Free chats aren't saved to a sidebar. Upgrade to name, organize, and revisit every conversation.</p>
+        <button class="btn btn-primary" id="sidebar-upgrade-btn">Unlock chat history</button>
+      </div>
+    </div>
+
+    <div class="sidebar-foot">
+      <span class="plan-badge" id="plan-badge">Free plan</span>
+      <div class="sidebar-foot-actions">
+        <button class="icon-btn demo-toggle" id="demo-toggle-btn" title="Demo control — switches between the free and paid experience for testing">Demo Pro</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="chat-page">
+    <div class="chat-header">
+      <div class="actions">
+        <button class="icon-btn sidebar-toggle-btn" id="sidebar-toggle-btn" title="Open sidebar" aria-controls="sidebar" aria-expanded="false">
+          <span class="hamburger-icon" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+        <button class="icon-btn" id="shortcuts-btn" title="Keyboard shortcuts">⌘ Shortcuts</button>
+        <button class="icon-btn" id="export-btn" title="Export this chat">Export</button>
+        <button class="icon-btn" id="clear-btn">Clear</button>
+        <div class="mode-bar" id="mode-bar" style="display:none;">
+          <button class="mode-pill active" data-mode="general">General</button>
+          <button class="mode-pill" data-mode="writing">✍️ Writing</button>
+          <button class="mode-pill" data-mode="code">⌘ Code</button>
+        </div>
+      </div>
+      <h3 id="chat-title" class="screen-reader-only">Conversation</h3>
+    </div>
+
+    <div id="messages"></div>
+
+    <p class="input-hint" id="input-hint"><kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for a new line</p>
+    <form id="chat-form">
+      <textarea id="chat-input" placeholder="Message Water AI..." rows="1"></textarea>
+      <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    <p class="disclosure">Water AI chat is powered by a connected third-party API and responses may occasionally be inaccurate.</p>
+  </div>
+</div>
+
+<!-- Upgrade popup shown to free users every 2 replies -->
+<div class="modal-overlay" id="upgrade-modal">
+  <div class="modal modal-wide">
+    <button class="modal-close" data-close="upgrade-modal">✕</button>
+    <span class="eyebrow">Water AI Pro</span>
+    <h2>You're on the free plan</h2>
+    <p class="sub">Upgrade for unlimited saved chats, pinned messages, and dedicated writing &amp; code modes.</p>
+
+    <div class="feature-highlight-grid">
+      <div class="feature-highlight">
+        <h4>Write with confidence</h4>
+        <p>Draft, edit, and refine writing that sounds like you, faster.</p>
+      </div>
+      <div class="feature-highlight">
+        <h4>Build faster</h4>
+        <p>Generate code, debug problems, and automate repetitive work.</p>
+      </div>
+    </div>
+
+    <ul class="feature-list">
+      <li><span class="check">✓</span> Unlimited named chats in a sidebar</li>
+      <li><span class="check">✓</span> Rename, search &amp; organize chats</li>
+      <li><span class="check">✓</span> Pin your most important messages</li>
+      <li><span class="check">✓</span> One-click share for any reply</li>
+      <li><span class="check">✓</span> Export full conversations</li>
+      <li><span class="check">✓</span> Full keyboard shortcut set</li>
+      <li><span class="check">✓</span> Writing &amp; Code assistant modes</li>
+      <li><span class="check">✓</span> No upgrade interruptions</li>
+      <li><span class="check">✓</span> Priority response speed</li>
+      <li><span class="check">✓</span> Longer, more detailed replies</li>
+    </ul>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close="upgrade-modal">Maybe later</button>
+      <button class="btn btn-primary" id="upgrade-confirm-btn">Upgrade to Pro</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shortcuts reference -->
+<div class="modal-overlay" id="shortcuts-modal">
+  <div class="modal">
+    <button class="modal-close" data-close="shortcuts-modal">✕</button>
+    <span class="eyebrow">Reference</span>
+    <h2>Keyboard shortcuts</h2>
+    <p class="sub">Move through Water AI without leaving your keyboard.</p>
+    <table class="shortcuts-table">
+      <tr><td>Send message</td><td><kbd>Enter</kbd></td></tr>
+      <tr><td>New line in message</td><td><kbd>Shift</kbd>+<kbd>Enter</kbd></td></tr>
+      <tr><td>New chat</td><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd></td></tr>
+      <tr><td>Focus message box</td><td><kbd>/</kbd></td></tr>
+      <tr><td>Toggle sidebar</td><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>B</kbd></td></tr>
+      <tr><td>Search chats <span style="color:var(--muted); font-weight:400;">(Pro)</span></td><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>F</kbd></td></tr>
+      <tr><td>Show shortcuts</td><td><kbd>?</kbd></td></tr>
+      <tr><td>Close a dialog</td><td><kbd>Esc</kbd></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Simple confirm modal for delete -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal" style="max-width:380px;">
+    <button class="modal-close" data-close="confirm-modal">✕</button>
+    <h2 id="confirm-title" style="font-size:19px;">Delete this chat?</h2>
+    <p class="sub" id="confirm-body" style="margin-bottom:20px;">This can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close="confirm-modal">Cancel</button>
+      <button class="btn btn-primary" id="confirm-action-btn" style="background:#b23b3b;">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="chat.js?v=2"></script>
+</body>
+</html>
